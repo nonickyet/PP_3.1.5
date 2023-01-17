@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>New user</title>
+  <style>
+    td {
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      padding: 10px 5px;
+      border-style: solid;
+      border-width: 1px;
+      overflow: hidden;
+      word-break: normal;
+      border-color: #ccc;
+      color: #333;
+      background-color: ivory;
+    }
+    .buttonAdd {
+      background: chartreuse;
+      position: relative;
+      left: 50%;
+      transform: translate(-50%, 0);
+    }
+    div {
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      color: #fd3434;
+    }
+  </style>
+</head>
+<body>
+<h1>Add user</h1>
+<form action="#" method="POST" th:action="@{new}" th:object="${user}">
+  <table>
+    <tr>
+      <td>
+        <label for="name">Enter name</label>
+        <input type="text" th:field="*{name}" id="name" required/>
+        <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}">name error</div>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <label for="lastname">Enter lastname</label>
+        <input type="text" th:field="*{lastname}" id="lastname"/>
+        <div th:if="${#fields.hasErrors('lastname')}" th:errors="*{lastname}">lastname error</div>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <label for="age">Enter age</label>
+        <input type="number" min="0" max="127" th:field="*{age}" id="age">
+        <div th:if="${#fields.hasErrors('age')}" th:errors="*{age}">age error</div>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <label for="email">Enter email</label>
+        <input type="text" th:field="*{email}" id="email" required/>
+        <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}">email error</div>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <label for="password">Enter password</label>
+        <input type="text" th:field="*{password}" id="password" required/>
+        <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}">password error</div>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <label for="roles">Enter role ID</label>
+        <input type="text" th:field="*{roles}" id="roles" required/>
+        <div th:if="${#fields.hasErrors('roles')}" th:errors="*{roles}">roles error</div>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <input type="submit" class="buttonAdd" value="Add user"/>
+      </td>
+    </tr>
+  </table>
+</form>
+<button class="buttonLogout" onclick="window.location.href = '/logout';">Logout</button>
+</body>
+</html>
