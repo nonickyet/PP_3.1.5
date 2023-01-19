@@ -60,10 +60,10 @@ public class AdminController {
 
     @RequestMapping(path = "/edit")
     public String update(User user, BindingResult bindingResult) {
-        System.out.println("we are here");
         if (bindingResult.hasErrors()) {
             return "admin/edit";
         } else {
+            user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
             userService.updateUser(user);
             return "redirect:/admin";
         }
