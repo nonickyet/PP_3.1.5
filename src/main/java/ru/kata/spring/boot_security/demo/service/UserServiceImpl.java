@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.dao.UserDao;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
+import ru.kata.spring.boot_security.demo.repositories.RoleRepository;
 import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
 import java.util.Collection;
@@ -20,11 +21,13 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
     UserDao userDao;
     private UserRepository userRepository;
+    private RoleRepository roleRepository;
 
     @Autowired
-    public UserServiceImpl(@Qualifier("userDaoImpl")UserDao userDao,@Qualifier("userRepository") UserRepository userRepository) {
+    public UserServiceImpl(@Qualifier("userDaoImpl") UserDao userDao, @Qualifier("userRepository") UserRepository userRepository, RoleRepository roleRepository) {
         this.userDao = userDao;
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
     }
 
     public User findByEmail(String username) {
@@ -33,13 +36,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public org.springframework.security.core.userdetails.User loadUserByUsername(String email) throws UsernameNotFoundException {
+    public User loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = findByEmail(email);
         if (user == null) throw new UsernameNotFoundException(String.format("User '%s' not found", email));
-        return new org.springframework.security.core.userdetails.User(
-                user.getEmail(),
-                user.getPassword(),
-                mapRolesToAuthorities(user.getRoles()));
+        System.out.println(user.getAuthorities());
+        return user;
     }
 
     private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles) {
@@ -81,6 +82,10 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void updateUser(User user) {
         userDao.updateUser(user);
+    }
+
+    public List<Role> getRoles() {
+        return roleRepository.findAll();
     }
 
 

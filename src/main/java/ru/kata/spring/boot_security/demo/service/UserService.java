@@ -2,6 +2,7 @@ package ru.kata.spring.boot_security.demo.service;
 
 
 import org.springframework.security.core.userdetails.UserDetailsService;
+import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 
 import java.io.Serializable;
@@ -19,4 +20,8 @@ public interface UserService extends UserDetailsService, Serializable {
     void removeUser(long id);
 
     void updateUser(User user);
+
+    List<Role> getRoles();
+
+
 }
