@@ -23,8 +23,9 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
     private RoleRepository roleRepository;
 
+    //Error creating bean with name 'userServiceImpl', оно отваливается без @autowired
     @Autowired
-    public UserServiceImpl(@Qualifier("userDaoImpl") UserDao userDao, @Qualifier("userRepository") UserRepository userRepository, RoleRepository roleRepository) {
+    public UserServiceImpl(@Qualifier("userDaoImpl") UserDao userDao, @Qualifier("userRepository") UserRepository userRepository, @Qualifier("roleRepository") RoleRepository roleRepository) {
         this.userDao = userDao;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
