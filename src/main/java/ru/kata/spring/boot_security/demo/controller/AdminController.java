@@ -1,6 +1,7 @@
 package ru.kata.spring.boot_security.demo.controller;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,9 +24,9 @@ public class AdminController {
     }
 
     @GetMapping
-    public String users(Model model, Principal principal) {
+    public String users(Model model, @AuthenticationPrincipal User loguser) {
         model.addAttribute("users", userService.getAllUsers());
-        model.addAttribute("loguser", userService.getUserByEmail(principal.getName()));
+        model.addAttribute("loguser", loguser);
         model.addAttribute("roles", userService.getRoles());
         model.addAttribute("newuser", new User());
         return "admin";
@@ -42,13 +43,13 @@ public class AdminController {
         }
     }
 
-    @RequestMapping(path = "/delete/{id}")
+    @PostMapping(path = "/delete/{id}")
     public String delete(@PathVariable("id") long id) {
         userService.removeUser(id);
         return "redirect:/admin";
     }
 
-    @RequestMapping(path = "/edit/{id}")
+    @PostMapping(path = "/edit/{id}")
     public String updateUser(@ModelAttribute("user") User user, @PathVariable("id") Long id) {
         user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
         user.setUserId(id);
