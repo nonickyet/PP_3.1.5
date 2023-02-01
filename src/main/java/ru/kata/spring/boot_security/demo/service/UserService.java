@@ -8,20 +8,23 @@ import ru.kata.spring.boot_security.demo.model.User;
 import java.io.Serializable;
 import java.util.List;
 
-public interface UserService extends UserDetailsService, Serializable {
+public interface UserService extends UserDetailsService {
+
+    List<Role> getAllRoles();
+
+    List<Role> getListByRole(List<String> name);
+
+    void add(User user);
+
     List<User> getAllUsers();
 
+    void delete(int id);
+
+    void update(User user);
+
+    User getById(int id);
+
+    User getByUsername(String userName);
+
     User getUserByEmail(String email);
-
-    User getUserById(long id);
-
-    void addUser(User user);
-
-    void removeUser(long id);
-
-    void updateUser(User user);
-
-    List<Role> getRoles();
-
-
 }

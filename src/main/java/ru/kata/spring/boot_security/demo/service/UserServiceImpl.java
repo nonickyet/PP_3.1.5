@@ -1,17 +1,17 @@
 package ru.kata.spring.boot_security.demo.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.kata.spring.boot_security.demo.dao.RoleDao;
 import ru.kata.spring.boot_security.demo.dao.UserDao;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
-import ru.kata.spring.boot_security.demo.repositories.RoleRepository;
-import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
 import java.util.Collection;
 import java.util.List;
@@ -19,20 +19,79 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserService {
-    UserDao userDao;
-    private UserRepository userRepository;
-    private RoleRepository roleRepository;
 
-    //Error creating bean with name 'userServiceImpl', оно отваливается без @autowired
+    private final RoleDao roleDao;
+    private final UserDao userDao;
+
     @Autowired
-    public UserServiceImpl(@Qualifier("userDaoImpl") UserDao userDao, @Qualifier("userRepository") UserRepository userRepository, @Qualifier("roleRepository") RoleRepository roleRepository) {
-        this.userDao = userDao;
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
+    public PasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
+    @Autowired
+    public UserServiceImpl(RoleDao roleDao, UserDao userDao) {
+        this.roleDao = roleDao;
+        this.userDao = userDao;
+    }
+
+    @Override
+    public List<Role> getAllRoles() {
+        return roleDao.getAllRoles();
+    }
+
+    @Override
+    public List<Role> getListByRole(List<String> name) {
+        return roleDao.getListByName(name);
+    }
+
+    @Override
+    @Transactional
+    public void add(User user) {
+        user.setPassword(bCryptPasswordEncoder().encode(user.getPassword()));
+        userDao.add(user);
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        return userDao.getAllUsers();
+    }
+
+    @Override
+    @Transactional
+    public void delete(int id) {
+        userDao.delete(id);
+    }
+
+    @Override
+    @Transactional
+    public void update(User user) {
+        User oldUser = getById(user.getId());
+        if (oldUser.getPassword().equals(user.getPassword()) || "".equals(user.getPassword())) {
+            user.setPassword(oldUser.getPassword());
+        } else {
+            user.setPassword(bCryptPasswordEncoder().encode(user.getPassword()));
+        }
+        userDao.update(user);
+    }
+
+    @Override
+    public User getById(int id) {
+        return userDao.getById(id);
+    }
+
+    @Override
+    public User getByUsername(String userName) {
+        return null;
+    }
+
+    @Override
+    public User getUserByEmail(String email) {
+        return null;
+    }
+
+
     public User findByEmail(String username) {
-        return userRepository.findByEmail(username);
+        return userDao.findByEmail(username);
     }
 
     @Override
@@ -44,50 +103,8 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
-    private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles) {
-        return roles.stream().map(r -> new SimpleGrantedAuthority(r.getName())).collect(Collectors.toList());
+    private Collection<? extends GrantedAuthority> ath(Collection<Role> roles) {
+        return roles.stream().map(r -> new SimpleGrantedAuthority(r.getRole()))
+                .collect(Collectors.toList());
     }
-
-    public UserServiceImpl(@Qualifier("userDaoImpl") UserDao userDao) {
-        this.userDao = userDao;
-    }
-
-    @Override
-    public List<User> getAllUsers() {
-        return userDao.getAllUsers();
-    }
-
-    @Override
-    public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email);
-    }
-
-    @Override
-    public User getUserById(long id) {
-        return userDao.getUserById(id);
-    }
-
-    @Override
-    @Transactional
-    public void addUser(User user) {
-        userDao.addUser(user);
-    }
-
-    @Override
-    @Transactional
-    public void removeUser(long id) {
-        userRepository.deleteUserByUserId(id);
-    }
-
-    @Override
-    @Transactional
-    public void updateUser(User user) {
-        userDao.updateUser(user);
-    }
-
-    public List<Role> getRoles() {
-        return roleRepository.findAll();
-    }
-
-
 }
