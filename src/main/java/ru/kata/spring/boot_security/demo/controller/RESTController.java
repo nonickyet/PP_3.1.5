@@ -23,7 +23,6 @@ public class RESTController {
     private UserService userService;
     private RoleService roleService;
 
-    @Autowired
     public RESTController(UserService userService, RoleService roleService) {
         this.userService = userService;
         this.roleService = roleService;

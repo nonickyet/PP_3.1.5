@@ -23,12 +23,12 @@ public class UserServiceImpl implements UserService {
     private final RoleDao roleDao;
     private final UserDao userDao;
 
-    @Autowired
+
     public PasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    @Autowired
+
     public UserServiceImpl(RoleDao roleDao, UserDao userDao) {
         this.roleDao = roleDao;
         this.userDao = userDao;
